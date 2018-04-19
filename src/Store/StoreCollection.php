@@ -1,6 +1,7 @@
 <?php
 namespace ShoppingFeed\Sdk\Store;
 
+use ShoppingFeed\Sdk\Api\Store\StoreResource;
 use ShoppingFeed\Sdk\Resource\AbstractCollection;
 
 /**

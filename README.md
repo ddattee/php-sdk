@@ -67,6 +67,7 @@ foreach ($stores as $store) {
 ### SDK resources documentation
 
 - [Inventiory management](doc/catalog.md)
+- [Order management](doc/order.md)
 
 
 ### Generates XML compliant feed for import

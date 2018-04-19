@@ -1,7 +1,9 @@
 <?php
-namespace ShoppingFeed\Sdk\Store;
+namespace ShoppingFeed\Sdk\Api\Store;
 
+use Jsor\HalClient\HalResource;
 use ShoppingFeed\Sdk\Api\Catalog\InventoryDomain;
+use ShoppingFeed\Sdk\Api\Order\OrderDomain;
 use ShoppingFeed\Sdk\Resource\AbstractResource;
 
 class StoreResource extends AbstractResource
@@ -46,5 +48,27 @@ class StoreResource extends AbstractResource
         return new InventoryDomain(
             $this->resource->getFirstLink('inventory')
         );
+    }
+
+    /**
+     * @return OrderDomain
+     */
+    public function getOrder()
+    {
+        return new OrderDomain(
+            $this->resource->getFirstLink('order')
+        );
+    }
+
+    /**
+     * Get number of new order for the current store
+     *
+     * @return int
+     */
+    public function getNewOrderCount()
+    {
+        /** @var HalResource $orderCount */
+        $orderCount = array_shift($this->resource->getResource('order'));
+        return (int) $orderCount->getProperty('newCount');
     }
 }
