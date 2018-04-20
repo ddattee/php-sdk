@@ -2,16 +2,19 @@
 
 ### Read inventories
 
-Accessing to the inventory domain can be done from store resource
+Accessing to the inventory manager can be done from store resource
 
 ```php
-$domain = $session->getMainStore()->getInventory();
+<?php
+$manager = $session->getMainStore()->getInventoryManager();
 ```
 
 Find a inventory item by product's reference (sku):
 
 ```php
-$item = $domain->getByReference('AZUR103-XL');
+<?php
+/** @var \ShoppingFeed\Sdk\Api\Catalog\InventoryDomain $inventoryManager */
+$item = $inventoryManager->getByReference('AZUR103-XL');
 // Access the quantity as integer
 $item->getQuantity();
 // Access the reference
@@ -23,9 +26,11 @@ $item->getUpdatedAt()->format('c');
 Get a particular page of inventories
 
 ```php
+<?php
+/** @var \ShoppingFeed\Sdk\Api\Catalog\InventoryDomain $inventoryManager */
 $page  = 1;
 $limit = 20;
-foreach ($domain->getPage($page, $limit) as $inventory) {
+foreach ($inventoryManager->getPage($page, $limit) as $inventory) {
 	echo $inventory->getQuantity() . PHP_EOL;
 }
 ```
@@ -33,8 +38,10 @@ foreach ($domain->getPage($page, $limit) as $inventory) {
 Or Iterates over all inventories of your catalog
 
 ```php
+<?php
+/** @var \ShoppingFeed\Sdk\Api\Catalog\InventoryDomain $inventoryManager */
 $page = 1;
-foreach ($domain->getAll($page) as $inventory) {
+foreach ($inventoryManager->getAll($page) as $inventory) {
 	echo $inventory->getQuantity() . PHP_EOL;
 }
 ```
@@ -43,17 +50,20 @@ foreach ($domain->getAll($page) as $inventory) {
 
 
 ```php
-$operation = new InventoryUpdate();
+<?php
+/** @var \ShoppingFeed\Sdk\Api\Catalog\InventoryDomain $inventoryManager */
+$operation = new \ShoppingFeed\Sdk\Api\Catalog\InventoryUpdate();
 $operation->add('ref1', 7);
 $operation->add('ref2', 1);
 
 // Then run the operation
-$result = $domain->execute($operation);
+$inventoryManager->execute($operation);
 ```
 
 The result object hold updated resources, and eventual errors
 
 ```php
+<?php
 // Check if one of the batch fails
 $result->hasError(); // true
 
