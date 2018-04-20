@@ -4,6 +4,7 @@ namespace ShoppingFeed\Sdk\Api\Store;
 use Jsor\HalClient\HalResource;
 use ShoppingFeed\Sdk\Api\Catalog\InventoryDomain;
 use ShoppingFeed\Sdk\Api\Order\OrderDomain;
+use ShoppingFeed\Sdk\Api\Order\OrderUpdater;
 use ShoppingFeed\Sdk\Resource\AbstractResource;
 
 class StoreResource extends AbstractResource
@@ -43,7 +44,7 @@ class StoreResource extends AbstractResource
     /**
      * @return InventoryDomain
      */
-    public function getInventory()
+    public function getInventoryManager()
     {
         return new InventoryDomain(
             $this->resource->getFirstLink('inventory')
@@ -53,10 +54,20 @@ class StoreResource extends AbstractResource
     /**
      * @return OrderDomain
      */
-    public function getOrder()
+    public function getOrderManager()
     {
         return new OrderDomain(
             $this->resource->getFirstLink('order')
+        );
+    }
+
+    /**
+     * @return OrderUpdater
+     */
+    public function getOrderUpdater()
+    {
+        return new OrderUpdater(
+            $this->resource->getFirstLink('order:operation')
         );
     }
 

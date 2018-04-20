@@ -61,14 +61,18 @@ foreach ($stores as $store) {
 
 ### SDK guides
 
-- [Authentication in details](doc/authenticate.md)
-- [Error handling and debug](doc/error-handling.md)
+- [Authentication in details](docs/authenticate.md)
+- [Error handling and debug](docs/error-handling.md)
 
 ### SDK resources documentation
 
-- [Inventiory management](doc/catalog.md)
-- [Order management](doc/order.md)
+- [Inventiory management](./docs/resources/inventory.md)
+- [Order management](./docs/resources/order.md)
 
+### Contributing
+
+- [Contributing guidelines](./CONTRIBUTING.md)
+- [Developer documentation](./docs/development.md)
 
 ### Generates XML compliant feed for import
 

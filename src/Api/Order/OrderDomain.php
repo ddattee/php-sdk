@@ -1,6 +1,7 @@
 <?php
 namespace ShoppingFeed\Sdk\Api\Order;
 
+use ShoppingFeed\Sdk\Api\Store\StoreResource;
 use ShoppingFeed\Sdk\Resource\AbstractDomainResource;
 use ShoppingFeed\Sdk\Order;
 
