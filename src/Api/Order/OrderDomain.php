@@ -14,4 +14,24 @@ class OrderDomain extends AbstractDomainResource
      * @var string
      */
     protected $resourceClass = ApiOrder\OrderResource::class;
+
+    /**
+     * @param string $reference the resource reference
+     *
+     * @return null|ApiOrder\OrderResource
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function getByReference($reference)
+    {
+        $resource = $this->link->get([], ['query' => ['reference' => $reference]]);
+        if ($resource->getProperty('count') > 0) {
+            return new $this->resourceClass(
+                $resource->getFirstResource('order'),
+                false
+            );
+        }
+
+        return null;
+    }
 }
