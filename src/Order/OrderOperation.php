@@ -10,10 +10,12 @@ class OrderOperation extends AbstractBulkOperation
     /**
      * Operation types
      */
-    const TYPE_ACCEPT = 'accept';
-    const TYPE_CANCEL = 'cancel';
-    const TYPE_REFUSE = 'refuse';
-    const TYPE_SHIP   = 'ship';
+    const TYPE_ACCEPT        = 'accept';
+    const TYPE_CANCEL        = 'cancel';
+    const TYPE_REFUSE        = 'refuse';
+    const TYPE_SHIP          = 'ship';
+    const TYPE_ACKNOWLEDGE   = 'acknowledge';
+    const TYPE_UNACKNOWLEDGE = 'unacknowledge';
 
     /**
      * @var array
@@ -23,6 +25,8 @@ class OrderOperation extends AbstractBulkOperation
         self::TYPE_CANCEL,
         self::TYPE_REFUSE,
         self::TYPE_SHIP,
+        self::TYPE_ACKNOWLEDGE,
+        self::TYPE_UNACKNOWLEDGE,
     ];
 
     /**

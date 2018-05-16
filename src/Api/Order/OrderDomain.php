@@ -110,9 +110,9 @@ class OrderDomain extends AbstractDomainResource
     /**
      * Notify market place of order refusal
      *
-     * @param string $reference Order reference
-     * @param string $channelName    Channel to notify
-     * @param array  $refund    Order item reference that will be refunded
+     * @param string $reference   Order reference
+     * @param string $channelName Channel to notify
+     * @param array  $refund      Order item reference that will be refunded
      *
      * @return OrderDomain
      *
@@ -125,6 +125,58 @@ class OrderDomain extends AbstractDomainResource
             $channelName,
             OrderOperation::TYPE_REFUSE,
             compact('refund')
+        );
+
+        return $this;
+    }
+
+    /**
+     * Acknowledge order reception
+     *
+     * @param string $reference
+     * @param string $channelName
+     * @param string $status
+     * @param string $storeReference
+     * @param string $message
+     *
+     * @return $this
+     *
+     * @throws \Exception
+     */
+    public function acknowledge($reference, $channelName, $status, $storeReference, $message = '')
+    {
+        $acknowledgedAt = new \DateTimeImmutable('now');
+        $this->orderOperations->addOperation(
+            $reference,
+            $channelName,
+            OrderOperation::TYPE_ACKNOWLEDGE,
+            compact('status', 'storeReference', 'acknowledgedAt', 'message')
+        );
+
+        return $this;
+    }
+
+    /**
+     * Unacknowledge order reception
+     *
+     * @param string $reference
+     * @param string $channelName
+     * @param string $status
+     * @param string $storeReference
+     * @param string $message
+     *
+     * @return $this
+     *
+     * @throws \Exception
+     */
+    public function unacknowledge($reference, $channelName, $status, $storeReference, $message = '')
+    {
+        $acknowledgedAt = new \DateTimeImmutable('now');
+        $this->orderOperations->addOperation(
+            $reference,
+            $channelName,
+            OrderOperation::TYPE_UNACKNOWLEDGE,
+            compact('status', 'storeReference', 'acknowledgedAt', 'message')
         );
 
         return $this;
