@@ -150,6 +150,68 @@ class OrderDomainTest extends TestCase
     /**
      * @throws \Exception
      */
+    public function testAcknowledgeOperations()
+    {
+        $link            = $this->createMock(HalLink::class);
+        $instance        = new OrderDomain($link);
+        $orderOperations = $this->createMock(OrderOperation::class);
+
+        $orderOperations
+            ->expects($this->at(0))
+            ->method('addOperation')
+            ->with(
+                'ref1',
+                'amazon',
+                OrderOperation::TYPE_ACKNOWLEDGE,
+                [
+                    'status'         => 'success',
+                    'storeReference' => '123654abc',
+                    'message'        => 'Acknowledged',
+                    'acknowledgedAt' => date_create_immutable(),
+                ]
+            );
+        $orderOperations
+            ->expects($this->at(1))
+            ->method('addOperation')
+            ->with(
+                'ref2',
+                'amazon2',
+                OrderOperation::TYPE_UNACKNOWLEDGE,
+                [
+                    'status'         => 'success2',
+                    'storeReference' => '123654abcd',
+                    'message'        => 'Unacknowledged',
+                    'acknowledgedAt' => date_create_immutable(),
+                ]
+            );
+
+        $instance->newOperations($orderOperations);
+
+        $this->assertInstanceOf(
+            OrderDomain::class,
+            $instance->acknowledge(
+                'ref1',
+                'amazon',
+                'success',
+                '123654abc',
+                'Acknowledged'
+            )
+        );
+        $this->assertInstanceOf(
+            OrderDomain::class,
+            $instance->unacknowledge(
+                'ref2',
+                'amazon2',
+                'success2',
+                '123654abcd',
+                'Unacknowledged'
+            )
+        );
+    }
+
+    /**
+     * @throws \Exception
+     */
     public function testExecute()
     {
         $link            = $this->createMock(HalLink::class);
