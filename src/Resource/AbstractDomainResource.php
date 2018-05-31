@@ -18,6 +18,11 @@ abstract class AbstractDomainResource
     protected $resourceClass = '';
 
     /**
+     * @var array
+     */
+    protected $filters = [];
+
+    /**
      * @param Hal\HalLink $link
      */
     public function __construct(Hal\HalLink $link)
@@ -52,14 +57,29 @@ abstract class AbstractDomainResource
     }
 
     /**
-     * @param int $fromPage
-     * @param int $perPage
+     * @param array $filters
+     */
+    public function addListFilters($filters)
+    {
+        $this->filters = array_merge($this->filters, $filters);
+    }
+
+    public function resetListFilters()
+    {
+        $this->filters = [];
+    }
+
+    /**
+     * @param array $criterias Pagination criterias
      *
      * @return PaginatedResourceCollection[]|\Traversable
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getPages($fromPage = 1, $perPage = self::PER_PAGE)
+    public function getPages(array $criterias)
     {
-        $resource = $this->createPaginator($fromPage, $perPage);
+        $criterias = new PaginationCriterias($criterias);
+        $resource  = $this->createPaginator($criterias);
         while ($resource) {
             yield $resource;
             $resource = $resource->next();
@@ -67,16 +87,15 @@ abstract class AbstractDomainResource
     }
 
     /**
-     * @param int $page
-     * @param int $limit
+     * @param PaginationCriterias $criterias
      *
-     * @return PaginatedResourceCollection
+     * @return null|PaginatedResourceCollection
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    private function createPaginator($page = 1, $limit = self::PER_PAGE)
+    private function createPaginator(PaginationCriterias $criterias)
     {
-        $resource = $this->link->get([], [
-            'query' => array_map('intval', compact('page', 'limit'))
-        ]);
+        $resource = $this->link->get([],['query' => $criterias->toArray()]);
 
         if (! $resource) {
             return null;
