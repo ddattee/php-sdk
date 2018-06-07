@@ -41,7 +41,7 @@ class StoreResourceTest extends Sdk\Test\Api\AbstractResourceTest
 
         $instance = new Sdk\Api\Store\StoreResource($halResource);
 
-        $this->assertInstanceOf(Sdk\Api\Catalog\InventoryDomain::class, $instance->getInventory());
+        $this->assertInstanceOf(Sdk\Api\Catalog\InventoryDomain::class, $instance->getInventoryApi());
     }
 
     public function testGetOrderApi()
