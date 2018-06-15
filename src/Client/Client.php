@@ -82,9 +82,6 @@ class Client
         $stack  = HandlerStack::create();
         $logger = $options->getLogger();
 
-        $handler = new SfMiddleware\ResourceStateHandler($logger);
-        $stack->push(Middleware::retry([$handler, 'decide'], [$handler, 'logState']));
-
         if ($options->handleRateLimit()) {
             $handler = new SfMiddleware\RateLimitHandler(3, $logger);
             $stack->push(Middleware::retry([$handler, 'decide'], [$handler, 'delay']));
@@ -98,6 +95,10 @@ class Client
 
         if ($logger) {
             $stack->push(Middleware::log($logger, new MessageFormatter()));
+            $stack->push(Middleware::log(
+                $logger,
+                new MessageFormatter('Resource {uri} is in {res_header_x-api-resource-state} state')
+            ));
         }
 
         return $stack;
