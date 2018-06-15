@@ -95,6 +95,10 @@ class Client
 
         if ($logger) {
             $stack->push(Middleware::log($logger, new MessageFormatter()));
+            $stack->push(Middleware::log(
+                $logger,
+                new MessageFormatter('Resource {uri} is in {res_header_x-api-resource-state} state')
+            ));
         }
 
         return $stack;
