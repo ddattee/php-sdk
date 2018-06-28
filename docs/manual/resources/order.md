@@ -24,9 +24,17 @@ Here are the available criteria at your disposal :
 - `page` : the page to retrieve or start from
 - `limit` : the number of item per page you want to retrieve (up to a maximum define by the API)
 - `filters` : an array of filters to filter orders by certain attributes
-    - `status` : filter order by their status, multiple status are allowed. Status available are : created, 
-    waiting_store_acceptance, refused, waiting_shipment, shipped, cancelled, refunded, partially_refunded, 
-    partially_shipped
+    - `reference` : filter list to retrieve only one reference
+    - `status` : filter list by order status, multiple status are allowed. Status available are : `created`, 
+    `waiting_store_acceptance`, `refused`, `waiting_shipment`, `shipped`, `cancelled`, `refunded`, `partially_refunded`, 
+    `partially_shipped`
+    - `acknowledgment` : filter list to retrieve only acknowledged or unacknowledged orders. Available values : 
+    `acknowledged`, `unacknowledged`
+    - `since` : filter list to retrieve order from a date. An ISO8601 date time is awaited, eg. `2017-03-08T13:26:33`.
+    - `until` : filter list to retrieve order up to a date. An ISO8601 date time is awaited, eg. `2017-03-08T13:26:33`. 
+    - `carrier` : filter list by order carrier.
+    - `tag` : filter list by tag associated to orders.
+    - `error` : filter list by an error type. Available error types : `ship`, `acknowledge` 
 
 Examples :
 ```php
@@ -34,10 +42,16 @@ Examples :
 /** @var \ShoppingFeed\Sdk\Api\Order\OrderDomain $orderApi */
 // Criteria used to query order API
 $criteria = [
-    'page'    => 1, // first page
+    'page'    => 1,  // first page
     'limit'   => 20, // 20 order per page
     'filters' => [
-        'status' => ['shipped', 'cancelled'] // we only want order with shipped or cancelled status
+        'status'         => ['shipped', 'cancelled'],   // we only want order with shipped or cancelled status
+        'acknowledgment' => 'unacknowledged',           // we only want order that are not acknowledged 
+        'since'          => '2017-03-08T13:26:33',      // we only want order with shipped or cancelled status
+        'until'          => '2017-04-08T13:26:33',      // we only want order with shipped or cancelled status
+        'carrier'        => 'MyCarrier',                // we only want order that are shipped by this carrier
+        'tag'            => 'my-tag123',                // we only want order that are tagged with this tag
+        'error'          => 'ship',                     // we only want order that had a ship error
     ]
 ];
 
