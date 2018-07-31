@@ -62,23 +62,4 @@ class ClientTest extends TestCase
 
         $instance->authenticate($credential);
     }
-
-    public function testCreateHandlerStack()
-    {
-        $options = $this->createMock(Sdk\Client\ClientOptions::class);
-        $options
-            ->expects($this->once())
-            ->method('handleRateLimit')
-            ->willReturn(true);
-        $options
-            ->expects($this->once())
-            ->method('getRetryOnServerError')
-            ->willReturn(3);
-        $options
-            ->expects($this->once())
-            ->method('getLogger')
-            ->willReturn($this->createMock(LoggerInterface::class));
-
-        $instance = new Sdk\Client\Client($options);
-    }
 }
