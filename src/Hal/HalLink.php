@@ -1,10 +1,9 @@
 <?php
 namespace ShoppingFeed\Sdk\Hal;
 
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\UriTemplate;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use QL\UriTemplate\UriTemplate;
 
 class HalLink
 {
@@ -111,6 +110,8 @@ class HalLink
      * @param array $variables
      *
      * @return null|string|string[]
+     *
+     * @throws \QL\UriTemplate\Exception
      */
     public function getUri(array $variables)
     {
@@ -119,10 +120,10 @@ class HalLink
         }
 
         if (null === static::$uriTemplate) {
-            static::$uriTemplate = new UriTemplate();
+            static::$uriTemplate = new UriTemplate($this->getHref());
         }
 
-        return static::$uriTemplate->expand($this->getHref(), $variables);
+        return static::$uriTemplate->expand($variables);
     }
 
     /**
@@ -130,7 +131,6 @@ class HalLink
      * @param array $options
      *
      * @return null|HalResource
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function get(array $variables = [], array $options = [])
     {
@@ -146,7 +146,6 @@ class HalLink
      * @param array $options
      *
      * @return null|HalResource
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function put($data, array $variables = [], array $options = [])
     {
@@ -162,7 +161,6 @@ class HalLink
      * @param array $options
      *
      * @return null|HalResource
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function patch($data, array $variables = [], array $options = [])
     {
@@ -178,7 +176,6 @@ class HalLink
      * @param array $options
      *
      * @return null|HalResource
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function post($data, array $variables = [], array $options = [])
     {
@@ -194,7 +191,6 @@ class HalLink
      * @param array $options
      *
      * @return null|HalResource
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function delete($data, array $variables = [], array $options = [])
     {
@@ -258,7 +254,7 @@ class HalLink
 
         if (! isset($headers['Content-Type']) && in_array($method, ['POST', 'PUT', 'PATCH'])) {
             $headers['Content-Type'] = 'application/json';
-            $body                    = \GuzzleHttp\json_encode($body);
+            $body                    = json_encode($body);
         }
 
         return $this->client->createRequest($method, $uri, $headers, $body);
@@ -286,8 +282,8 @@ class HalLink
      */
     private function createExceptionCallback(callable $callback = null)
     {
-        return function (RequestException $exception) use ($callback) {
-            if ($exception->hasResponse() && $callback) {
+        return function (\Exception $exception) use ($callback) {
+            if (method_exists($exception, 'hasResponse') && $exception->hasResponse() && $callback) {
                 $resource = $this->client->createResource($exception->getResponse());
                 call_user_func($callback, $resource);
             }

@@ -4,6 +4,7 @@ namespace ShoppingFeed\Sdk\Test\Api\Order;
 use GuzzleHttp\Psr7;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\UriInterface;
 use ShoppingFeed\Sdk;
 
 class OrderOperationTest extends TestCase
@@ -354,5 +355,54 @@ class OrderOperationTest extends TestCase
         $method->invokeArgs($instance, [$resource, $request, &$references]);
 
         $this->assertEquals($expected, $references);
+    }
+
+    public function testCreateRequestGenerator()
+    {
+        $link     = $this->createMock(Sdk\Hal\HalLink::class);
+        $requests = [];
+        $ref      = &$requests;
+
+        $instance = new Sdk\Api\Order\OrderOperation();
+
+        $reflection = new \ReflectionClass(get_class($instance));
+        $method     = $reflection->getMethod('createRequestGenerator');
+        $method->setAccessible(true);
+
+        $callable = $method->invoke($instance, 'type', $link, $requests);
+
+        $this->assertInternalType(\PHPUnit_Framework_Constraint_IsType::TYPE_CALLABLE, $callable);
+
+        $callable(['data']);
+    }
+
+    public function testCreateSuccessBatchsendCallback()
+    {
+        $request = $this->createMock(RequestInterface::class);
+        $request
+            ->method('getUri')
+            ->willReturn($this->createMock(UriInterface::class));
+        $request
+            ->method('getBody')
+            ->willReturn('{"order":{"reference":"abc-123"}}');
+
+        $link       = $this->createMock(Sdk\Hal\HalLink::class);
+        $requests   = [$request];
+        $resources  = [];
+        $references = [];
+        $ref        = &$resources;
+        $ref2       = &$references;
+
+        $instance = new Sdk\Api\Order\OrderOperation();
+
+        $reflection = new \ReflectionClass(get_class($instance));
+        $method     = $reflection->getMethod('createSuccessBatchsendCallback');
+        $method->setAccessible(true);
+
+        $callable = $method->invoke($instance, $resources, $references, 0, $requests);
+
+        $this->assertInternalType(\PHPUnit_Framework_Constraint_IsType::TYPE_CALLABLE, $callable);
+
+        $callable($this->createMock(Sdk\Hal\HalResource::class));
     }
 }

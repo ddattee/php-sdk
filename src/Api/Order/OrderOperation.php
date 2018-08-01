@@ -1,7 +1,7 @@
 <?php
 namespace ShoppingFeed\Sdk\Api\Order;
 
-use GuzzleHttp\Psr7\Request;
+use Psr\Http\Message\RequestInterface;
 use ShoppingFeed\Sdk\Api;
 use ShoppingFeed\Sdk\Hal;
 use ShoppingFeed\Sdk\Operation;
@@ -198,13 +198,7 @@ class OrderOperation extends Operation\AbstractBulkOperation
         $requests = [];
         foreach ($this->allowedOperationTypes as $type) {
             $this->eachBatch(
-                function (array $chunk) use ($type, $link, &$requests) {
-                    $requests[] = $link->createRequest(
-                        'POST',
-                        ['operation' => $type],
-                        ['order' => $chunk]
-                    );
-                },
+                $this->createRequestGenerator($type, $link, $requests),
                 $type
             );
         }
@@ -215,16 +209,7 @@ class OrderOperation extends Operation\AbstractBulkOperation
         $requestIndex     = 0;
         $link->batchSend(
             $requests,
-            function (Hal\HalResource $resource) use (&$resources, &$ticketReferences, &$requestIndex, $requests) {
-                $this->associateTicketWithReference(
-                    $resource,
-                    $requests[$requestIndex],
-                    $ticketReferences
-                );
-
-                array_push($resources, $resource);
-                $requestIndex++;
-            },
+            $this->createSuccessBatchsendCallback($resources, $ticketReferences, $requestIndex, $requests),
             null,
             [],
             $this->getPoolSize()
@@ -234,15 +219,64 @@ class OrderOperation extends Operation\AbstractBulkOperation
     }
 
     /**
+     * Create request generation callback
+     *
+     * @param string      $type
+     * @param Hal\HalLink $link
+     * @param array       $requests
+     *
+     * @return \Closure
+     */
+    private function createRequestGenerator($type, Hal\HalLink $link, array &$requests)
+    {
+        return function (array $chunk) use ($type, $link, &$requests) {
+            $requests[] = $link->createRequest(
+                'POST',
+                ['operation' => $type],
+                ['order' => $chunk]
+            );
+        };
+    }
+
+    /**
+     * Batch send success callback
+     *
+     * @param array $resources
+     * @param array $ticketReferences
+     * @param int   $requestIndex
+     * @param array $requests
+     *
+     * @return \Closure
+     */
+    private function createSuccessBatchsendCallback(
+        array &$resources,
+        array &$ticketReferences,
+        &$requestIndex,
+        array $requests
+    )
+    {
+        return function (Hal\HalResource $resource) use (&$resources, &$ticketReferences, &$requestIndex, $requests) {
+            $this->associateTicketWithReference(
+                $resource,
+                $requests[$requestIndex],
+                $ticketReferences
+            );
+
+            array_push($resources, $resource);
+            $requestIndex++;
+        };
+    }
+
+    /**
      * Extract association between order references, operation and ticket
      *
-     * @param Hal\HalResource $resource
-     * @param Request         $request
-     * @param                 $ticketReferences
+     * @param Hal\HalResource  $resource
+     * @param RequestInterface $request
+     * @param                  $ticketReferences
      */
     private function associateTicketWithReference(
         Hal\HalResource $resource,
-        Request $request,
+        RequestInterface $request,
         &$ticketReferences
     )
     {
