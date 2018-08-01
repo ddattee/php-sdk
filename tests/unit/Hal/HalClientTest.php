@@ -112,6 +112,23 @@ class HalClientTest extends TestCase
     }
 
     /**
+     * @throws \ReflectionException
+     */
+    public function testBatchSend()
+    {
+        /** @var Http\Adapter\AdapterInterface|\PHPUnit_Framework_MockObject_MockObject $httpClient */
+        $httpClient = $this->createMock(Http\Adapter\AdapterInterface::class);
+        $httpClient
+            ->expects($this->once())
+            ->method('batchSend')
+            ->willReturn($this->createMock(Message\ResponseInterface::class));
+
+        $instance = new Hal\HalClient('http://fake.uri', $httpClient);
+
+        $instance->batchSend([$this->createMock(Message\RequestInterface::class)]);
+    }
+
+    /**
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \ReflectionException
      */
@@ -129,5 +146,13 @@ class HalClientTest extends TestCase
             $this->createMock(Message\RequestInterface::class)
         );
         $this->assertNull($result);
+    }
+
+    public function testGetAdapter()
+    {
+        $httpClient = $this->createMock(Http\Adapter\AdapterInterface::class);
+        $instance   = new Hal\HalClient('http://fake.uri', $httpClient);
+
+        $this->assertSame($httpClient, $instance->getAdapter());
     }
 }
