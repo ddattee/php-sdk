@@ -2,7 +2,6 @@
 namespace ShoppingFeed\Sdk\Test\Client;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
 use ShoppingFeed\Sdk;
 
 class ClientTest extends TestCase
@@ -21,6 +20,13 @@ class ClientTest extends TestCase
 
         $this->assertInstanceOf(Sdk\Api\Session\SessionResource::class, $session);
         $this->assertSame($sessionMock, $session);
+    }
+
+    public function testGetClient()
+    {
+        $instance = new Sdk\Client\Client();
+        $this->assertInstanceOf(Sdk\Hal\HalClient::class, $instance->getHalClient());
+
     }
 
     public function testPing()
