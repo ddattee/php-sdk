@@ -53,6 +53,14 @@ class StoreResource extends AbstractResource
     }
 
     /**
+     * @return StoreOwnerResource
+     */
+    public function getOwner()
+    {
+        return new StoreOwnerResource($this->getProperty('owner'));
+    }
+
+    /**
      * @return StoreChannelDomain
      */
     public function getChannelApi()
