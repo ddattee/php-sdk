@@ -43,6 +43,11 @@ class HalLink
     private $client;
 
     /**
+     * @var null|int
+     */
+    protected $transactionId = null;
+
+    /**
      * @param HalClient $client
      * @param           $href
      * @param array     $config
@@ -67,6 +72,11 @@ class HalLink
         if (isset($config['title'])) {
             $this->title = $config['title'];
         }
+    }
+
+    public function setTransactionId(?int $transactionId): void
+    {
+        $this->transactionId = $transactionId;
     }
 
     /**
@@ -267,6 +277,10 @@ class HalLink
         $uri     = $this->getUri($variables);
         $method  = strtoupper($method);
         $headers = [];
+
+        if (null !== $this->transactionId) {
+            $headers['X-Transaction-Id'] = $this->transactionId;
+        }
 
         if ((null !== $body && '' !== $body) && in_array($method, ['POST', 'PUT', 'PATCH', 'DELETE'])) {
             $headers['Content-Type'] = 'application/json';
