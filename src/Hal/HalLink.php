@@ -256,7 +256,7 @@ class HalLink
 
     /**
      * @param \Psr\Http\Message\RequestInterface|\Psr\Http\Message\RequestInterface[] $request
-     * @param array                               $config
+     * @param array                                                                   $config
      *
      * @return null|HalResource
      */
@@ -274,13 +274,17 @@ class HalLink
      */
     public function createRequest($method, array $variables = [], $body = null)
     {
+        if (null !== $this->transactionId) {
+            if (! isset($variables['query'])) {
+                $variables['query'] = [];
+            }
+
+            $variables['query']['tid'] = $this->transactionId;
+        }
+
         $uri     = $this->getUri($variables);
         $method  = strtoupper($method);
         $headers = [];
-
-        if (null !== $this->transactionId) {
-            $headers['X-Transaction-Id'] = $this->transactionId;
-        }
 
         if ((null !== $body && '' !== $body) && in_array($method, ['POST', 'PUT', 'PATCH', 'DELETE'])) {
             $headers['Content-Type'] = 'application/json';

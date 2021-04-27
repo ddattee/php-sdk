@@ -39,16 +39,17 @@ abstract class AbstractDomainResource
         $this->link = $link;
     }
 
-    /**
-     * @param int $transactionId A transaction ID to add to all calls made from this API, allow to link all calls
-     *                           made during a session. Should only be set if needed. A X-Transaction-Id header will be
-     *                           added in all request initiated from this domain object
-     */
-    public function initTransaction(int $transactionId): AbstractDomainResource
+    public function withTransactionId(int $transactionId): AbstractDomainResource
+    {
+        $instance = clone $this;
+        $instance->setTransactionId($transactionId);
+
+        return $instance;
+    }
+
+    private function setTransactionId(int $transactionId): void
     {
         $this->link->setTransactionId($transactionId);
-
-        return $this;
     }
 
     public function closeTransaction(): void
